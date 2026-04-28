@@ -1,0 +1,8 @@
+# Disallow all crawlers from indexing this repository's content
+# when served via GitHub Pages or any custom host.
+#
+# Note: this file does NOT prevent github.com itself from showing
+# repository content in search results — github.com has its own
+# robots.txt that we cannot override. See README for details.
+User-agent: *
+Disallow: /

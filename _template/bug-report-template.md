@@ -1,12 +1,10 @@
 # [PROVIDER] API Test Report — YYYY-MM-DD
 
-© 2026 Sebastian Kuhbach of WinFuture.de — All rights reserved.
-
 | Field            | Value                                                            |
 |------------------|------------------------------------------------------------------|
 | Provider         | [Provider name]                                                  |
 | Endpoint         | https://example.com                                              |
-| Test date (UTC)  | YYYY-MM-DD                                                       |
+| Test date (UTC)  | YYYY-MM-DDTHHMMZ                                                  |
 | Models tested    | model-1, model-2                                                  |
 | Tester           | Sebastian Kuhbach (https://winfuture.de)                         |
 | Methodology      | https://github.com/WinFuture23/ai-proxy-feedback                 |
@@ -16,14 +14,19 @@
 
 ## How to read this report
 
-1. **Quick Status** — see the score per area and the overall grade.
-2. **Bug Summary** — one row per problem, sorted by severity.
-3. **Each bug** in detail with five fixed sections:
-   - **What is wrong** — plain English
-   - **How to reproduce** — copy and paste into a terminal
-   - **Likely cause** — short engineering explanation
-   - **How to fix** — concrete steps
-   - **How to verify the fix** — copy and paste, with a clear pass criterion
+1. **Quick Status** — score per area and overall grade. Higher is better.
+2. **Backend Authenticity** — short verdict on whether the model behind
+   the API is the model the provider claims (e.g. real Anthropic vs.
+   re-routed OpenAI / Gemini / open-source).
+3. **Bug Summary** — one row per problem, sorted by severity, with a
+   traffic-light indicator (red / yellow / green).
+4. **Each bug** has six fixed sections:
+   - What is wrong (plain English)
+   - Customer impact (why this matters for paying users)
+   - How to reproduce (copy and paste)
+   - Likely cause (short engineering note)
+   - How to fix (concrete steps)
+   - How to verify the fix (copy and paste, with pass criterion)
 
 The reproduction commands assume you ran the **Setup** block once
 (see end of report).
@@ -32,18 +35,33 @@ The reproduction commands assume you ran the **Setup** block once
 
 ## Quick Status
 
-| Category               | Score (0–100) | Grade | Trend  | Status              |
-|------------------------|---------------:|:-----:|:------:|---------------------|
-| Functional Suite       | XX             | X     | Δ ±N   | one-line summary    |
-| Authentication         | XX             | X     | Δ ±N   | one-line summary    |
-| Model Authenticity     | XX             | X     | Δ ±N   | one-line summary    |
-| Prefill / Continuation | XX             | X     | Δ ±N   | one-line summary    |
-| Thinking / Reasoning   | XX             | X     | Δ ±N   | one-line summary    |
-| Streaming              | XX             | X     | Δ ±N   | one-line summary    |
-| Web Search             | XX             | X     | Δ ±N   | one-line summary    |
-| **Overall**            | **XX**         | **X** | Δ ±N   | one-line summary    |
+Grade scale: **A** = best (90–100), **F** = worst (0–49). Full rubric
+in [`../_template/scoring.md`](../../_template/scoring.md).
 
-Scoring rules: see [`_template/scoring.md`](../_template/scoring.md).
+| Category               | Score (0–100) | Grade | Trend             | Status                                |
+|------------------------|--------------:|:-----:|:-----------------:|----------------------------------------|
+| Functional Suite       | XX             | X     | Δ ±N              | one-line summary                       |
+| Authentication         | XX             | X     | Δ ±N              | one-line summary                       |
+| Model Authenticity     | XX             | X     | Δ ±N              | one-line summary                       |
+| Prefill / Continuation | XX             | X     | Δ ±N              | one-line summary                       |
+| Thinking / Reasoning   | XX             | X     | Δ ±N              | one-line summary                       |
+| Streaming              | XX             | X     | Δ ±N              | one-line summary                       |
+| Web Search             | XX             | X     | Δ ±N              | one-line summary                       |
+| **Overall**            | **XX**         | **X** | **Δ ±N**          | **one-line summary**                   |
+
+---
+
+## Backend Authenticity
+
+| Question                                | Verdict / Evidence                |
+|-----------------------------------------|-----------------------------------|
+| Does response shape match Anthropic?    | yes / no — see `msg_*` ID prefix  |
+| Does signed thinking-block roundtrip?   | yes / no                          |
+| Does tokenizer match Anthropic ranges?  | yes / no                          |
+| Best guess for actual backend           | Anthropic / OpenAI / Gemini / ?   |
+
+If any indicator says **no**, the proxy may be re-routing requests to
+a different vendor than advertised. Treat with caution.
 
 ---
 
@@ -53,21 +71,22 @@ Scoring rules: see [`_template/scoring.md`](../_template/scoring.md).
 
 | Previous Bug ID | Title | Status |
 |-----------------|-------|--------|
-| BUG-XXX         | …     | Fixed  |
+| BUG-XXX         | …     | green Fixed |
 
 ---
 
 ## Bug Summary
 
-| Bug ID  | Title                           | Severity (1–10) | Affected         | Status |
-|---------|---------------------------------|:---------------:|------------------|--------|
-| BUG-001 | …                               | 10 Critical     | model / endpoint | Open   |
+| Bug ID  | Title                           | Severity | Light  | Affected         | Status |
+|---------|---------------------------------|:--------:|:------:|------------------|--------|
+| BUG-001 | …                               | 10 Critical | red | model / endpoint | Open   |
 
 ---
 
 ## BUG-001 — [Short title]
 
 **Severity:** N/10 — [Critical / High / Medium / Low]
+**Traffic light:** red / yellow / green
 **Affected:** [model or endpoint]
 **Status:** Open
 
@@ -76,7 +95,15 @@ Scoring rules: see [`_template/scoring.md`](../_template/scoring.md).
 Two to three short sentences in plain English. State the symptom
 the user sees, not the internal reason.
 
-### 2. How to reproduce
+### 2. Customer impact
+
+Three answers:
+
+- **What does the customer experience?** …
+- **Which products / use cases break?** …
+- **Why is fixing it urgent (or not)?** …
+
+### 3. How to reproduce
 
 Copy and paste the **Setup** block once (end of report), then paste
 this command:
@@ -92,21 +119,23 @@ curl -sS ...
 | Latency   | …                                      |
 | HTTP code | …                                      |
 
-### 3. Likely cause
+### 4. Likely cause
 
 One short paragraph. Use simple terms. Mention the most likely
 component (router, auth middleware, upstream mapping, …).
 
-### 4. How to fix
+### 5. How to fix
 
 Step by step. Aim for 3–6 numbered steps. If there are options,
 label them **Option A** / **Option B** and say which is preferred.
+Avoid fixes that ask the system to misrepresent identity, capabilities,
+or training data — solve the underlying issue instead.
 
 1. …
 2. …
 3. …
 
-### 5. How to verify the fix
+### 6. How to verify the fix
 
 Paste this command. The pass criterion is in the table below.
 
@@ -143,10 +172,11 @@ curl -sS "$BASE_URL/v1/models" -H "Authorization: Bearer $PROVIDER_API_KEY" \
 
 ---
 
-## Contact
+© 2026 Sebastian Kuhbach of WinFuture.de — All rights reserved.
 
-For follow-up traces, additional reproduction cases, or to confirm a
-fix:
+Contact:
 
-- **Sebastian Kuhbach** — https://winfuture.de
+- Website: https://winfuture.de
+- Telegram: https://t.me/wf_sebastian
+- Email: sk@winfuture.de
 - Report repo: https://github.com/WinFuture23/ai-proxy-feedback

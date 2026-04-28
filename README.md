@@ -17,14 +17,19 @@ previous one, so the regression history stays auditable.
 
 ```
 g0i/
-  YYYY-MM-DD/
+  YYYY-MM-DDTHHMMZ/         e.g. 2026-04-28T0517Z
     report.md      Provider-facing bug report (issues, repros, fixes)
     results.txt    Raw test output (sanitized — no API keys)
 
 codemax/
-  YYYY-MM-DD/
+  YYYY-MM-DDTHHMMZ/
     ...
 ```
+
+Each report is in its own timestamped folder. Multiple reports per
+day land in separate folders rather than overwriting each other.
+Folders are sortable, so the latest run is always at the bottom of
+the directory listing.
 
 ## Methodology
 
@@ -72,3 +77,25 @@ This repo is a curated, public-facing mirror. The full test suite
 (and per-provider workflows that produce the result files) live in a
 separate private repository. Bug reports and sanitized result files
 are mirrored here automatically on each new run.
+
+---
+
+## Search engine indexing
+
+A `robots.txt` is included at the repo root. It tells crawlers to
+skip everything when this content is served through GitHub Pages or
+any custom domain.
+
+**Important caveat:** the file at `https://github.com/.../robots.txt`
+does **not** override `https://github.com/robots.txt` — GitHub.com
+controls what its own search-engine indexing exposes. We cannot
+de-list this repository from Google by editing files inside the
+repository. If full deindexing matters, the repository must be made
+private, or the same content must be hosted somewhere we control
+the HTTP layer.
+
+---
+
+© 2026 Sebastian Kuhbach of WinFuture.de — All rights reserved.
+
+Contact: https://winfuture.de · https://t.me/wf_sebastian · sk@winfuture.de
